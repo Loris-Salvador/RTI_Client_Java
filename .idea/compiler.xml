@@ -9,5 +9,8 @@
         <module name="ClientJava" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="ClientJava" target="19" />
+    </bytecodeTargetLevel>
   </component>
 </project>
