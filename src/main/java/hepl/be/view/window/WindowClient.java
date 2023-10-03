@@ -4,6 +4,7 @@ import hepl.be.controller.MainWindowController;
 
 import javax.sound.sampled.Line;
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 
 public class WindowClient extends JFrame {
@@ -163,7 +164,13 @@ public class WindowClient extends JFrame {
         frame_2.setBounds(10, 370, 751, 211);
         frame_2.setBorder(BorderFactory.createRaisedBevelBorder());
 
-        tableWidgetPanier = new JTable();
+
+        DefaultTableModel model = new DefaultTableModel();
+        model.addColumn("Article");
+        model.addColumn("Prix à l'unité");
+        model.addColumn("Quantité");
+
+        tableWidgetPanier = new JTable(model);
         tableWidgetPanier.setBounds(10, 10, 511, 151);
 
         label_9 = new JLabel("Total à payer:");
@@ -260,51 +267,50 @@ public class WindowClient extends JFrame {
         pushButtonPayer.addActionListener(mainWindowController);
     }
 
-    public void LoginOK()
+    public void setNom(String nom)
     {
-        pushButtonLogin.setEnabled(false);
-        pushButtonLogout.setEnabled(true);
-        pushButtonSuivant.setEnabled(true);
-        pushButtonPrecedent.setEnabled(true);
-        lineEditNom.setEnabled(false);
-        lineEditMotDePasse.setEnabled(false);
-        checkBoxNouveauClient.setEnabled(false);
-        spinBoxQuantite.setEnabled(true);
-        pushButtonAcheter.setEnabled(true);
-        pushButtonSupprimer.setEnabled(true);
-        pushButtonViderPanier.setEnabled(true);
-        pushButtonPayer.setEnabled(true);
+        lineEditNom.setText(nom);
     }
-
-    public void LogoutOK()
+    public String getNom()
     {
-        pushButtonLogout.setEnabled(false);
-        pushButtonLogin.setEnabled(true);
-        lineEditNom.setEnabled(true);
-        lineEditMotDePasse.setEnabled(true);
-        checkBoxNouveauClient.setEnabled(true);
-        spinBoxQuantite.setEnabled(false);
-        pushButtonAcheter.setEnabled(false);
-        pushButtonSuivant.setEnabled(false);
-        pushButtonPrecedent.setEnabled(false);
-        pushButtonSupprimer.setEnabled(false);
-        pushButtonViderPanier.setEnabled(false);
-        pushButtonPayer.setEnabled(false);
-
-        setNom("");
-        setMotDePasse("");
-
+        return lineEditNom.getText();
+    }
+    public void setMotDePasse(String motDePasse)
+    {
+        lineEditMotDePasse.setText(motDePasse);
+    }
+    public String getMotDePasse()
+    {
+        return lineEditMotDePasse.getText();
+    }
+    public void setPrix(float prix)
+    {
+        if(prix >= 0)
+            lineEditPrixUnitaire.setText(String.valueOf(prix));
+        else
+            lineEditPrixUnitaire.setText("");
+    }
+    public void setStock(int stock)
+    {
+        if(stock >= 0)
+            lineEditStock.setText(String.valueOf(stock));
+        else
+            lineEditStock.setText("");
+    }
+    public void setPublicite(String text){
+        lineEditPublicite.setText(text);
+    }
+    public int isNouveauClientChecked()
+    {
         if(checkBoxNouveauClient.isSelected())
-            checkBoxNouveauClient.setSelected(false);
-
-        setArticle("", 0, 0, "");
-
+            return 1;
+        else
+            return 0;
     }
-
     public void setArticle(String article, float prix, int stock, String image) {
         lineEditArticle.setText(article);
-        lineEditPrixUnitaire.setText(String.valueOf(prix));
-        lineEditStock.setText(String.valueOf(stock));
+        setPrix(prix);
+        setStock(stock);
 
 
         // Load the image from the specified path
@@ -313,47 +319,94 @@ public class WindowClient extends JFrame {
         // Create a JLabel to display the image
         scrollArea.setIcon(imageIcon);
     }
-
-
-
     public void setQuantite(int quantite)
     {
         spinBoxQuantite.setValue(quantite);
     }
+    public int getQuantité()
+    {
+        return (int) spinBoxQuantite.getValue();
+    }
 
     public void setTotal(float total)
     {
-        lineEditTotal.setText(String.valueOf(total));
-    }
-
-    public String getNom()
-    {
-        return lineEditNom.getText();
-    }
-
-    public String getMotDePasse()
-    {
-        return lineEditMotDePasse.getText();
-    }
-
-    public void setNom(String nom)
-    {
-        lineEditNom.setText(nom);
-    }
-
-    public void setMotDePasse(String motDePasse)
-    {
-        lineEditMotDePasse.setText(motDePasse);
-    }
-
-    public int isNouveauClientSelected()
-    {
-        if(checkBoxNouveauClient.isSelected())
-            return 1;
+        if(total >= 0)
+            lineEditTotal.setText(String.format("%.2f", total)+"€");
         else
-            return 0;
+            lineEditTotal.setText("");
     }
 
+    public void LoginOK()
+    {
+        pushButtonLogin.setEnabled(false);
+        pushButtonLogout.setEnabled(true);
+        lineEditNom.setEnabled(false);
+        lineEditMotDePasse.setEnabled(false);
+        checkBoxNouveauClient.setEnabled(false);
+
+        spinBoxQuantite.setEnabled(true);
+        pushButtonPrecedent.setEnabled(true);
+        pushButtonSuivant.setEnabled(true);
+        pushButtonAcheter.setEnabled(true);
+        pushButtonSupprimer.setEnabled(true);
+        pushButtonViderPanier.setEnabled(true);
+        pushButtonPayer.setEnabled(true);
+    }
+
+    public void LogoutOK()
+    {
+
+        pushButtonLogin.setEnabled(true);
+        pushButtonLogout.setEnabled(false);
+        lineEditNom.setEnabled(true);
+        lineEditMotDePasse.setEnabled(true);
+        checkBoxNouveauClient.setEnabled(true);
+
+        spinBoxQuantite.setEnabled(false);
+        pushButtonPrecedent.setEnabled(false);
+        pushButtonSuivant.setEnabled(false);
+        pushButtonAcheter.setEnabled(false);
+        pushButtonSupprimer.setEnabled(false);
+        pushButtonViderPanier.setEnabled(false);
+        pushButtonPayer.setEnabled(false);
+
+        setArticle("", -1, -1, "");
+
+        setMotDePasse("");
+        setNom("");
+
+        setQuantite(0);
+
+        if(checkBoxNouveauClient.isSelected())
+            checkBoxNouveauClient.setSelected(false);
+
+        videTablePanier();
+        setTotal(-1);
+    }
+
+    public void ajouteArticleTablePanier(String article, float prix, int quantite) {
+
+        DefaultTableModel model = (DefaultTableModel) tableWidgetPanier.getModel();
+        model.addRow(new Object[]{article, String.format("%.2f", prix)+"€", quantite});
+    }
+
+    public void videTablePanier() {
+        DefaultTableModel model = (DefaultTableModel) tableWidgetPanier.getModel();
+        model.setRowCount(0);
+    }
+
+    public int getIndiceArticleSelectionne()
+    {
+        return tableWidgetPanier.getSelectedRow();
+    }
+
+    public void dialogueMessage(String titre, String message) {
+        JOptionPane.showMessageDialog(null, message, titre, JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    public void dialogueErreur(String titre, String message) {
+        JOptionPane.showMessageDialog(null, message, titre, JOptionPane.ERROR_MESSAGE);
+    }
 
 
 }
