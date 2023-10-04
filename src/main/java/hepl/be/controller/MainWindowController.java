@@ -14,7 +14,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class MainWindowController implements ActionListener {
-
     private WindowClient mainWindow;
     private Socket sSocket;
 
@@ -34,7 +33,7 @@ public class MainWindowController implements ActionListener {
         {
             // Création de la socket et connexion sur le serveur
             try {
-                sSocket = new Socket("172.20.10.3", 50000);
+                sSocket = new Socket("192.168.203.128", 1024);
             } catch (IOException ex) {
                 throw new RuntimeException(ex);
             }
@@ -64,6 +63,7 @@ public class MainWindowController implements ActionListener {
                             if (mots[1].equals("OK")) {
                                 mainWindow.LoginOK();
                                 mainWindow.dialogueMessage("LOGIN", mots[2]);
+                                Actualiser_Panier();
                             } else if (mots[1].equals("BAD")) {
                                 mainWindow.dialogueErreur("LOGIN", mots[2]);
                                 return;
@@ -190,7 +190,7 @@ public class MainWindowController implements ActionListener {
         }
         else if(source.getText().equals("Payer"))
         {
-            LibSocket.send(sSocket, "CONFIRMER#" + mainWindow.getNom());
+            LibSocket.send(sSocket, "CONFIRMER");
 
             String reponse = LibSocket.receive(sSocket);
 
